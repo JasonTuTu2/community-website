@@ -60,11 +60,34 @@ main {
 }
 
 .hero {
-  text-align: center;
-  padding: 3rem 0;
+  padding: 3rem;
   background: linear-gradient(135deg, #fffacd, #ffeb3b);
   border-radius: 10px;
   margin-bottom: 3rem;
+}
+
+.hero-content {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.hero-image {
+  flex: 1;
+  min-width: 0;
+}
+
+.hero-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  object-fit: cover;
+}
+
+.hero-text {
+  flex: 1;
+  min-width: 0;
 }
 
 .hero h1 {
@@ -76,6 +99,7 @@ main {
 .hero p {
   font-size: 1.2rem;
   color: #6b5700;
+  line-height: 1.8;
 }
 
 .about-hero {
@@ -204,6 +228,14 @@ footer {
 
   .nav-links {
     gap: 1rem;
+  }
+
+  .hero-content {
+    flex-direction: column;
+  }
+
+  .hero {
+    padding: 2rem 1rem;
   }
 
   .hero h1,
