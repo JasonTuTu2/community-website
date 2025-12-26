@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Community Association - Home</title>
+  <title>Community Association - Events</title>
   <link rel="stylesheet" href="styles.css">
   <script src="events-data.js"></script>
   <script src="render-events.js"></script>
@@ -13,8 +13,8 @@
     <nav>
       <div class="logo">Community Association</div>
       <ul class="nav-links">
-        <li><a href="index.html" class="active">Home</a></li>
-        <li><a href="events.html">Events</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="events.html" class="active">Events</a></li>
         <li><a href="about.html">About Us</a></li>
         <li><a href="donation.html">Donation</a></li>
       </ul>
@@ -22,13 +22,7 @@
   </header>
 
   <main>
-    <section class="hero">
-      <h1>Welcome to Our Community!</h1>
-      <p>Stay connected with the latest news and updates from our community association.</p>
-    </section>
-
     <section class="posts">
-      <h2>Recent Posts</h2>
       <div id="events-container"></div>
     </section>
   </main>
@@ -37,8 +31,9 @@
     <p>&copy; 2024 Community Association. All rights reserved.</p>
   </footer>
   <script>
-    // Render the 3 most recent events on home page
-    renderEvents('events-container', 3);
+    // Render all events on events page
+    renderEvents('events-container');
   </script>
 </body>
 </html>
+
