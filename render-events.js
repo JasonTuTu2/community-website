@@ -1,13 +1,24 @@
 // Function to render events
-function renderEvents(containerId, limit = null) {
+async function renderEvents(containerId, limit = null) {
   const container = document.getElementById(containerId);
   if (!container) return;
+
+  // If eventsData is empty, fetch from sheet first
+  if (eventsData.length === 0) {
+    await fetchEventsFromSheet();
+  }
 
   // Get events to display (limited or all)
   const eventsToShow = limit ? eventsData.slice(0, limit) : eventsData;
 
   // Clear container
   container.innerHTML = '';
+
+  // Show message if no events
+  if (eventsToShow.length === 0) {
+    container.innerHTML = '<p>No events available at this time.</p>';
+    return;
+  }
 
   // Render each event
   eventsToShow.forEach(event => {

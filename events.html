@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Community Association - Events</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="events-data.js"></script>
+  <script src="sheet-config.js"></script>
+  <script src="fetch-events.js"></script>
   <script src="render-events.js"></script>
 </head>
 <body>
@@ -31,8 +32,11 @@
     <p>&copy; 2024 Community Association. All rights reserved.</p>
   </footer>
   <script>
-    // Render all events on events page
-    renderEvents('events-container');
+    // Initialize and render all events on events page
+    (async () => {
+      await initializeEvents();
+      await renderEvents('events-container');
+    })();
   </script>
 </body>
 </html>
