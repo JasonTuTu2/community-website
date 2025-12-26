@@ -178,6 +178,21 @@ main {
   display: block;
 }
 
+/* T-shirt image used in About -> Get Involved */
+.tshirt-image {
+  margin-top: 1rem;
+  max-width: 360px; /* rectangular preview width */
+  border: 2px solid #ffd815;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.tshirt-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
 .post-content {
   flex: 1;
   display: flex;

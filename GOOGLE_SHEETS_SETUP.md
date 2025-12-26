@@ -21,14 +21,14 @@ Starting from Row 2, add your events. Example:
 
 | Date | DateSort | Title | Description | Image | Alt |
 |------|----------|-------|-------------|-------|-----|
-| March 15, 2024 | 2024-03-15 | Spring Community Garden Opening | We're excited to announce... | images/community-garden.jpg | Spring Community Garden Opening |
+| March 15, 2024 | 2024-03-15 | Spring Community Garden Opening | We're excited to announce... | images/community-garden.png | Spring Community Garden Opening |
 
 **Notes:**
 - **Date**: Display date (e.g., "March 15, 2024")
 - **DateSort**: Sortable date in YYYY-MM-DD format (e.g., "2024-03-15")
 - **Title**: Event title
 - **Description**: Full event description
-- **Image**: Image path (e.g., "images/community-garden.jpg")
+- **Image**: Image path (e.g., "images/community-garden.png")
 - **Alt**: Image alt text for accessibility
 
 ## Step 4: Make Sheet Public
