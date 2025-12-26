@@ -78,6 +78,27 @@ main {
   color: #6b5700;
 }
 
+.newsletter {
+  text-align: left;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  background: #fffef5;
+  border: 2px solid #ffd700;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(255, 215, 0, 0.2);
+}
+
+.newsletter h2 {
+  color: #8b6f00;
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.newsletter p {
+  color: #6b5700;
+  font-size: 1rem;
+}
+
 .about-hero {
   text-align: center;
   padding: 3rem 0;
