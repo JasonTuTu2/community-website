@@ -33,12 +33,21 @@ nav {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  /* Make the logo container match the header/nav bar height so
+     the image can scale to fill it without altering other layout. */
+  height: 3.5rem;
 }
 
 .logo-img {
-  height: 2.5rem;
+  /* Make the logo image occupy the full height of the header bar
+     without changing other layout rules. We set a fixed height on
+     the .logo container and make the image scale to 100% of that
+     container's height. Adjust the 3.5rem value if your header
+     padding/spacing changes. */
+  height: 100%;
   width: auto;
   object-fit: contain;
+  display: block;
 }
 
 .nav-links {
