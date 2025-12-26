@@ -12,7 +12,10 @@
 <body>
   <header>
     <nav>
-      <div class="logo">Community Association</div>
+      <div class="logo">
+        <img src="images/logo.png" alt="Markham Community Connect Association Logo" class="logo-img">
+        <span>Markham Community Connect Association</span>
+      </div>
       <ul class="nav-links">
         <li><a href="index.html" class="active">Home</a></li>
         <li><a href="events.html">Events</a></li>
@@ -34,7 +37,7 @@
     </section>
 
     <section class="posts">
-      <h2>Recent Posts</h2>
+      <h2>Major Events</h2>
       <div id="events-container"></div>
     </section>
   </main>
@@ -43,10 +46,10 @@
     <p>&copy; 2024 Community Association. All rights reserved.</p>
   </footer>
   <script>
-    // Initialize and render the 3 most recent events on home page
+    // Initialize and render all events on home page (only show events with Show="yes")
     (async () => {
       await initializeEvents();
-      await renderEvents('events-container', 3);
+      await renderEvents('events-container', null, true);
     })();
   </script>
 </body>

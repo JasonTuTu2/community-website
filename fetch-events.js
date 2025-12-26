@@ -32,15 +32,17 @@ async function fetchEventsFromSheet() {
       }
     }
     
-    // Skip header row (index 0) and process data rows
+    // Process all rows as data (Google Sheets may not include header row in response)
     eventsData = [];
-    for (let i = 1; i < rows.length; i++) {
+    for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       console.log(`Processing row ${i} (Sheet Row ${i + 1}):`, row);
       
       // Handle sparse arrays - Google Sheets may not include empty cells
       // Check if row.c exists (even if sparse)
       if (row.c) {
+        // Log raw cell values for debugging
+        console.log(`Row ${i} raw cells:`, row.c.map((cell, idx) => ({ index: idx, value: cell?.v, formatted: cell?.f })));
         // Get raw cell values - Google Sheets API returns dates as Date objects or Date() strings
         const getRawCellValue = (index) => {
           if (row.c[index] && row.c[index].v !== null && row.c[index].v !== undefined) {
@@ -88,12 +90,14 @@ async function fetchEventsFromSheet() {
           return null;
         };
         
-        const rawDate = getRawCellValue(0);
-        const rawDateSort = getRawCellValue(1);
-        const title = getCellValue(2);
-        const description = getCellValue(3);
-        const image = getCellValue(4);
-        const alt = getCellValue(5);
+        // Ignore first column (index 0), read from second column onwards
+        const rawDate = getRawCellValue(1);      // Column B: Date
+        const rawDateSort = getRawCellValue(2);   // Column C: DateSort
+        const title = getCellValue(3);            // Column D: Title
+        const description = getCellValue(4);      // Column E: Description
+        const image = getCellValue(5);           // Column F: Image
+        const alt = getCellValue(6);             // Column G: Alt
+        const show = getCellValue(7).toLowerCase(); // Column H: Show (yes/no)
         
         // Parse dates
         const dateObj = parseGoogleDate(rawDate);
@@ -120,9 +124,10 @@ async function fetchEventsFromSheet() {
             title: title,
             description: description,
             image: image || 'images/placeholder.png',
-            alt: alt || title
+            alt: alt || title,
+            show: show === 'yes' // Convert to boolean: true if "yes", false otherwise
           });
-          console.log(`Row ${i} (Sheet Row ${i + 1}) ADDED successfully`);
+          console.log(`Row ${i} (Sheet Row ${i + 1}) ADDED successfully (Show: ${show})`);
         } else {
           console.log(`Row ${i} (Sheet Row ${i + 1}) SKIPPED: missing date (${date}) or title (${title})`);
         }

@@ -1,5 +1,5 @@
 // Function to render events
-async function renderEvents(containerId, limit = null) {
+async function renderEvents(containerId, limit = null, showOnly = false) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
@@ -8,8 +8,16 @@ async function renderEvents(containerId, limit = null) {
     await fetchEventsFromSheet();
   }
 
+  // Filter events based on showOnly parameter
+  let filteredEvents = eventsData;
+  if (showOnly) {
+    // Only show events where show === true (Show column = "yes")
+    filteredEvents = eventsData.filter(event => event.show === true);
+  }
+  // If showOnly is false, show all events (for events page)
+
   // Get events to display (limited or all)
-  const eventsToShow = limit ? eventsData.slice(0, limit) : eventsData;
+  const eventsToShow = limit ? filteredEvents.slice(0, limit) : filteredEvents;
 
   // Clear container
   container.innerHTML = '';
