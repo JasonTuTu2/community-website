@@ -6,6 +6,7 @@ import os
 import requests
 import csv
 import io
+import sys
 
 # Load environment variables from .env file (if present)
 load_dotenv()
@@ -14,6 +15,29 @@ load_dotenv()
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 app = Flask(__name__, static_folder=project_root, static_url_path='')
 CORS(app)
+
+
+def check_quota_error(status_code, response_body):
+    """Check if the error is a quota/rate limit error and return a user-friendly message."""
+    if status_code == 429:
+        return "Rate limit exceeded. GitHub Models API quota limit reached. Please try again later."
+    if status_code == 401:
+        return "Unauthorized. Check your GITHUB_TOKEN is valid and not expired."
+    if status_code == 403:
+        return "Access forbidden. Your GitHub token may not have permission to use Models API."
+    
+    # Check response body for quota-related messages
+    if isinstance(response_body, dict):
+        error_msg = response_body.get('error', {})
+        if isinstance(error_msg, dict):
+            msg = error_msg.get('message', '').lower()
+        else:
+            msg = str(error_msg).lower()
+        
+        if 'quota' in msg or 'rate limit' in msg or 'out of' in msg or 'exceeded' in msg:
+            return f"Quota or rate limit error from GitHub: {error_msg}"
+    
+    return None
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 # GitHub inference endpoint and default model (matches your sample)
@@ -96,15 +120,27 @@ def ask():
     try:
         r = requests.post(GITHUB_API_URL, headers=headers, json=payload, timeout=30)
     except requests.RequestException as e:
-        return jsonify({'error': 'GitHub inference request failed', 'details': str(e)}), 502
+        error_msg = f'GitHub inference request failed: {e}'
+        print(f'ERROR: {error_msg}', file=sys.stderr)
+        return jsonify({'error': error_msg}), 502
 
-    # If GitHub returns an error status, include the status and body to help debugging
+    # If GitHub returns an error status, parse and report quota errors clearly
     if r.status_code >= 400:
         try:
             body = r.json()
         except Exception:
             body = r.text
-        return jsonify({'error': 'GitHub API returned error', 'status_code': r.status_code, 'response': body}), 502
+        
+        # Check for quota/rate limit errors specifically
+        quota_msg = check_quota_error(r.status_code, body)
+        if quota_msg:
+            print(f'QUOTA ERROR: {quota_msg}', file=sys.stderr)
+            return jsonify({'error': quota_msg}), 429
+        
+        # Generic error
+        error_msg = f'GitHub API returned status {r.status_code}'
+        print(f'ERROR: {error_msg} - Response: {body}', file=sys.stderr)
+        return jsonify({'error': error_msg, 'details': str(body)}), 502
 
     # Success - parse assistant reply (expecting GitHub's chat/completions shape similar to OpenAI)
     try:
