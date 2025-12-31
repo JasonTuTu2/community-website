@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Association - Ask</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo">
+        <img src="images/logo.png" alt="Markham Community Connect Association Logo" class="logo-img">
+        <span>Markham Community Connect Association</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="donation.html">Donation</a></li>
+        <li><a href="ask.html" class="active">Ask</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Ask Us A Question</h1>
+      <p>Have a question about us? Get answers powered by AI.</p>
+    </section>
+
+    <section class="ask-container">
+      <div class="ask-form-wrapper">
+        <form id="ask-form" class="ask-form">
+          <div class="form-group">
+            <label for="question-input">Your Question:</label>
+            <textarea
+              id="question-input"
+              name="question"
+              class="question-textarea"
+              placeholder="Type your question here... (e.g., What community events are coming up? How can I volunteer?)"
+              rows="6"
+              required
+            ></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn">Get Answer</button>
+        </form>
+
+        <div id="answer-container" class="answer-container" style="display: none;">
+          <div class="answer-box">
+            <h3>Answer:</h3>
+            <p id="answer-text"></p>
+            <button id="clear-btn" class="clear-btn">Ask Another Question</button>
+          </div>
+        </div>
+
+        <div id="loading-container" class="loading-container" style="display: none;">
+          <p>Loading your answer...</p>
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Markham Community Connect Association. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Handle form submission (frontend only for now)
+    document.getElementById('ask-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const question = document.getElementById('question-input').value.trim();
+      if (!question) return;
+
+      // Show loading state
+      document.getElementById('ask-form').style.display = 'none';
+      document.getElementById('loading-container').style.display = 'block';
+
+      try {
+        // TODO: Send to backend endpoint which calls OpenAI API
+        // For now, this is a placeholder for the backend integration
+        const response = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to get answer');
+        }
+
+        const data = await response.json();
+        displayAnswer(data.answer);
+      } catch (error) {
+        console.error('Error:', error);
+        displayAnswer('Sorry, I could not process your question. Please try again later.');
+      }
+    });
+
+    function displayAnswer(answer) {
+      document.getElementById('loading-container').style.display = 'none';
+      document.getElementById('answer-text').textContent = answer;
+      document.getElementById('answer-container').style.display = 'block';
+    }
+
+    // Handle "Ask Another Question" button
+    document.getElementById('clear-btn').addEventListener('click', () => {
+      document.getElementById('question-input').value = '';
+      document.getElementById('answer-container').style.display = 'none';
+      document.getElementById('ask-form').style.display = 'block';
+      document.getElementById('question-input').focus();
+    });
+  </script>
+</body>
+</html>
