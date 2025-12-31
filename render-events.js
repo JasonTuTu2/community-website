@@ -33,6 +33,16 @@ async function renderEvents(containerId, limit = null, showOnly = false) {
     const article = document.createElement('article');
     article.className = 'post-card';
     
+    // Convert description Markdown to sanitized HTML (requires marked + DOMPurify loaded)
+    let descHtml = '';
+    try {
+      const raw = event.description || '';
+      const parsed = (typeof marked !== 'undefined') ? marked.parse(raw) : (raw);
+      descHtml = (typeof DOMPurify !== 'undefined') ? DOMPurify.sanitize(parsed) : parsed;
+    } catch (e) {
+      descHtml = event.description || '';
+    }
+
     article.innerHTML = `
       <div class="post-image">
         <img src="${event.image}" alt="${event.alt}">
@@ -40,7 +50,7 @@ async function renderEvents(containerId, limit = null, showOnly = false) {
       <div class="post-content">
         <div class="post-date">${event.date}</div>
         <h3>${event.title}</h3>
-        <p>${event.description}</p>
+        <div class="post-desc">${descHtml}</div>
       </div>
     `;
     
