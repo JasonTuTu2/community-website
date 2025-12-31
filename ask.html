@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Community Association - Ask</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
 </head>
 <body>
   <header>
@@ -50,7 +52,7 @@
         <div id="answer-container" class="answer-container" style="display: none;">
           <div class="answer-box">
             <h3>Answer:</h3>
-            <p id="answer-text"></p>
+            <div id="answer-text"></div>
             <button id="clear-btn" class="clear-btn">Ask Another Question</button>
           </div>
         </div>
@@ -102,7 +104,14 @@
 
     function displayAnswer(answer) {
       document.getElementById('loading-container').style.display = 'none';
-      document.getElementById('answer-text').textContent = answer;
+      // Convert Markdown to HTML and sanitize before inserting
+      try {
+        const rawHtml = marked.parse(answer || '');
+        const safeHtml = DOMPurify.sanitize(rawHtml);
+        document.getElementById('answer-text').innerHTML = safeHtml;
+      } catch (e) {
+        document.getElementById('answer-text').textContent = answer;
+      }
       document.getElementById('answer-container').style.display = 'block';
     }
 

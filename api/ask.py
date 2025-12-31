@@ -3,6 +3,8 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 import requests
+import csv
+import io
 
 # Serve static files from project root (one level up from api/)
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -13,6 +15,39 @@ GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 # GitHub inference endpoint and default model (matches your sample)
 GITHUB_API_URL = 'https://models.github.ai/inference/chat/completions'
 GITHUB_DEFAULT_MODEL = os.getenv('GITHUB_MODEL', 'openai/gpt-4o')
+SHEET_CSV_URL = os.getenv('SHEET_CSV_URL')
+
+
+def fetch_sheet_preview():
+    if not SHEET_CSV_URL:
+        return ''
+    try:
+        r = requests.get(SHEET_CSV_URL, timeout=10)
+        r.raise_for_status()
+        sio = io.StringIO(r.text)
+        reader = csv.reader(sio)
+        rows = []
+        max_rows = 30
+        max_cols = 9
+        max_cell = 350
+        for i, row in enumerate(reader):
+            if i >= max_rows:
+                break
+            truncated = []
+            for c in row[:max_cols]:
+                if c is None:
+                    c = ''
+                cell = c.replace('\n', ' ').strip()
+                if len(cell) > max_cell:
+                    cell = cell[:max_cell] + '...'
+                truncated.append(cell)
+            rows.append(', '.join(truncated))
+        preview = '\n'.join(rows)
+        if preview and len(r.text.splitlines()) > max_rows:
+            preview += f"\n... (truncated to first {max_rows} rows)"
+        return preview
+    except Exception as e:
+        return f'/* sheet fetch error: {e} */'
 
 
 @app.route('/api/ask', methods=['POST'])
@@ -31,10 +66,23 @@ def ask():
         'Content-Type': 'application/json',
     }
 
+    # Build system message including spreadsheet preview (if configured)
+    sheet_preview = fetch_sheet_preview()
+    system_message = (
+        "You are a helpful, polite assistant for Markham Community Connect Association (MCCA).\n"
+        "Your role is to answer questions about MCCA using the provided spreadsheet data (events, programs, dates, locations, descriptions, and links).\n"
+        "Rules:\n"
+        "- Base answers only on the spreadsheet content; do not invent information.\n"
+        "- If information is missing or unclear, say so and suggest contacting MCCA.\n"
+        "- Use a friendly, community-focused tone.\n\n"
+        "Spreadsheet preview (first rows/columns):\n"
+        + (sheet_preview if sheet_preview else '[no sheet data available]')
+    )
+
     payload = {
         'model': GITHUB_DEFAULT_MODEL,
         'messages': [
-            {'role': 'system', 'content': 'You are a helpful assistant for a community association website.'},
+            {'role': 'system', 'content': system_message},
             {'role': 'user', 'content': question},
         ],
         'max_tokens': 500,
