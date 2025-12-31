@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+from dotenv import load_dotenv
 import os
 import requests
 import csv
 import io
+
+# Load environment variables from .env file (if present)
+load_dotenv()
 
 # Serve static files from project root (one level up from api/)
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
